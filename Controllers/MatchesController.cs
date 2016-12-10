@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using IosoccerApi.Models;
+using Microsoft.Extensions.Logging;
 
 namespace IosoccerApi.Controllers
 {
@@ -14,10 +15,12 @@ namespace IosoccerApi.Controllers
     public class MatchesController : Controller
     {
         private IHostingEnvironment _environment;
+        private readonly ILogger<MatchesController> _logger;
 
-        public MatchesController(IHostingEnvironment environment)
+        public MatchesController(IHostingEnvironment environment, ILogger<MatchesController> logger)
         {
             _environment = environment;
+            _logger = logger;
         }
 
         [HttpPost("search")]
@@ -41,6 +44,7 @@ namespace IosoccerApi.Controllers
                     using (var fileStream = new FileStream(Path.Combine(matchFiles, file.FileName), FileMode.Create))
                     {
                         await file.CopyToAsync(fileStream);
+                        new MatchParser(_logger).ParseMatches();
                     }
                 }
             }
